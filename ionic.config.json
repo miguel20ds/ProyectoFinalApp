@@ -1,0 +1,7 @@
+{
+  "name": "tu-aroma-encantador",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
