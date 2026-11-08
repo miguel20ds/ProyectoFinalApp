@@ -1,0 +1,10 @@
+ion-content { --padding-top: calc(32px + var(--ion-safe-area-top, 0px)); }
+.hero { text-align: center; margin-bottom: 32px; }
+.emoji { font-size: 56px; }
+h1 { color: #ff007f; font-size: 34px; font-weight: bold; margin: 16px 0 0; }
+.subtitulo { color: #00f0ff; font-size: 18px; margin: 8px 0 0; }
+.enlace {
+  display: block; width: 100%; text-align: left;
+  background: none; border: 0; padding: 8px 0;
+  color: #00f0ff; font-size: 16px; font-weight: bold;
+}

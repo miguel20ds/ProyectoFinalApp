@@ -1,0 +1,14 @@
+.centrado { min-height: 100%; display: flex; align-items: center; }
+.tarjeta { width: 100%; text-align: center; }
+h1 { color: #ff007f; font-size: 32px; font-weight: bold; margin: 0 0 8px; }
+.sub { color: #00f0ff !important; margin-bottom: 32px !important; }
+ion-input {
+  --border-radius: 16px;
+  --border-color: #666;
+  --highlight-color-focused: #00f0ff;
+  color: #fff;
+  margin-bottom: 16px;
+  text-align: left;
+}
+ion-button { margin-top: 8px; }
+.nuevo { color: #00f0ff !important; font-weight: bold; margin-top: 24px !important; }

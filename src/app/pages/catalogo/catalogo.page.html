@@ -1,0 +1,40 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button default-href="/inicio" text="Inicio" color="secondary"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button color="secondary" (click)="irAMisReservas()">Mis reservas</ion-button>
+      <ion-button color="primary" (click)="salir()">Salir</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <header class="encabezado">
+    <h1>CATÁLOGO</h1>
+    <h2>Bienvenido {{ nombre() }}</h2>
+    <p>Descubre tu esencia de lujo</p>
+  </header>
+
+  @if (cargando()) {
+    <div class="centro"><ion-spinner color="primary"></ion-spinner></div>
+  }
+
+  <div class="lista">
+    @for (p of productos(); track p.id) {
+      <ion-card class="tarjeta item">
+        <img [src]="p.thumbnail" [alt]="p.title" loading="lazy" />
+        <ion-card-content>
+          <span class="marca">{{ p.brand }}</span>
+          <h3>{{ p.title }}</h3>
+          <p class="desc">{{ p.description }}</p>
+          <hr />
+          <div class="fila">
+            <span class="precio">${{ p.price }}</span>
+            <ion-button color="secondary" size="small" (click)="confirmarReserva(p)">LO QUIERO</ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    }
+  </div>
+</ion-content>

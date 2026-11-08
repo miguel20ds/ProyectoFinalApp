@@ -1,0 +1,53 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button color="primary" (click)="salir()">Salir</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <header class="encabezado">
+    <h1>PANEL ADMIN</h1>
+    <p>Reservas de todos los clientes</p>
+  </header>
+
+  <ion-segment [value]="filtro()" [scrollable]="true" (ionChange)="cambiarFiltro($event)">
+    <ion-segment-button value="pendiente"><ion-label>Pendientes</ion-label></ion-segment-button>
+    <ion-segment-button value="entregado"><ion-label>Entregadas</ion-label></ion-segment-button>
+    <ion-segment-button value="cancelada"><ion-label>Canceladas</ion-label></ion-segment-button>
+    <ion-segment-button value="todas"><ion-label>Todas</ion-label></ion-segment-button>
+  </ion-segment>
+
+  @if (cargando()) {
+    <div class="centro"><ion-spinner color="primary"></ion-spinner></div>
+  } @else if (fallo()) {
+    <p class="vacio">No se pudieron cargar las reservas.</p>
+  } @else if (visibles().length === 0) {
+    <p class="vacio">No hay reservas en esta categoría.</p>
+  }
+
+  <div class="lista">
+    @for (r of visibles(); track r.id) {
+      <ion-card class="tarjeta">
+        <ion-card-content class="reserva">
+          @if (r.producto_imagen) {
+            <img [src]="r.producto_imagen" [alt]="r.producto_titulo" />
+          }
+          <div class="info">
+            <h3>{{ r.producto_titulo }}</h3>
+            <p class="cliente">👤 {{ r.profiles?.nombre ?? 'Cliente' }} · {{ r.profiles?.email }}</p>
+            <p>${{ r.precio }} · {{ r.creada_en | date: 'dd/MM/yyyy HH:mm' }}</p>
+            <span class="estado" [class.entregado]="r.estado === 'entregado'" [class.cancelada]="r.estado === 'cancelada'">
+              {{ etiqueta[r.estado] }}
+            </span>
+            @if (r.estado === 'pendiente') {
+              <div class="acciones">
+                <ion-button size="small" color="secondary" (click)="entregar(r)">Marcar entregado</ion-button>
+              </div>
+            }
+          </div>
+        </ion-card-content>
+      </ion-card>
+    }
+  </div>
+</ion-content>

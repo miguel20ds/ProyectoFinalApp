@@ -35,3 +35,43 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+
+:root {
+  --ion-background-color: #1e1e2c;
+  --ion-text-color: #e0e0e0;
+
+  --ion-color-primary: #ff007f;
+  --ion-color-primary-rgb: 255, 0, 127;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #e00070;
+  --ion-color-primary-tint: #ff1a8c;
+
+  --ion-color-secondary: #00f0ff;
+  --ion-color-secondary-rgb: 0, 240, 255;
+  --ion-color-secondary-contrast: #1e1e2c;
+  --ion-color-secondary-contrast-rgb: 30, 30, 44;
+  --ion-color-secondary-shade: #00d3e0;
+  --ion-color-secondary-tint: #1af2ff;
+}
+
+.tarjeta {
+  background: #2a2a3c;
+  border: 2px solid #ff007f;
+  border-radius: 20px;
+  margin: 0 0 24px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  h2 { color: #00f0ff; font-size: 20px; font-weight: bold; margin: 0 0 12px; }
+  p  { color: #e0e0e0; font-size: 16px; line-height: 1.8; margin: 0; }
+}
+
+ion-toast.toast-aroma {
+  --background: #2a2a3c;
+  --color: #00f0ff;
+  --border-color: #ff007f;
+  --border-width: 2px;
+  --border-style: solid;
+  --border-radius: 16px;
+  font-weight: bold;
+}
