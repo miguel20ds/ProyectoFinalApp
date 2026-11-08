@@ -1,0 +1,47 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button default-href="/catalogo" text="Catálogo" color="secondary"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <header class="encabezado">
+    <h1>MIS RESERVAS</h1>
+    <p>Sigue el estado de tus perfumes</p>
+  </header>
+
+  @if (cargando()) {
+    <div class="centro"><ion-spinner color="primary"></ion-spinner></div>
+  } @else if (fallo()) {
+    <p class="vacio">No se pudieron cargar tus reservas.</p>
+  } @else if (reservas().length === 0) {
+    <p class="vacio">Aún no tienes reservas.</p>
+  }
+
+  <div class="lista">
+    @for (r of reservas(); track r.id) {
+      <ion-card class="tarjeta">
+        <ion-card-content class="reserva">
+          @if (r.producto_imagen) {
+            <img [src]="r.producto_imagen" [alt]="r.producto_titulo" />
+          }
+          <div class="info">
+            <h3>{{ r.producto_titulo }}</h3>
+            <p>${{ r.precio }} · {{ r.creada_en | date: 'dd/MM/yyyy HH:mm' }}</p>
+            <span class="estado" [class.entregado]="r.estado === 'entregado'" [class.cancelada]="r.estado === 'cancelada'">
+              {{ etiqueta[r.estado] }}
+            </span>
+             @if (r.estado === 'pendiente') {
+              <div class="acciones">
+                <ion-button size="small" color="danger" fill="outline" (click)="cancelar(r)">
+                  Cancelar reserva
+                </ion-button>
+              </div>
+            }
+          </div>
+        </ion-card-content>
+      </ion-card>
+    }
+  </div>
+</ion-content>

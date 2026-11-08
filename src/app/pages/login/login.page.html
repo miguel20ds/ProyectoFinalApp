@@ -1,0 +1,36 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button default-href="/inicio" text="Inicio" color="secondary"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="centrado">
+    <ion-card class="tarjeta">
+      <ion-card-content>
+        <h1>Bienvenido</h1>
+        <p class="sub">Inicia sesión para descubrir</p>
+
+        <form [formGroup]="form" (ngSubmit)="iniciarSesion()">
+          <ion-input formControlName="email" type="email" autocomplete="email"
+            fill="outline" label="Correo electrónico" labelPlacement="floating"
+            [errorText]="error('email')"></ion-input>
+
+          <ion-input formControlName="password" type="password" autocomplete="current-password"
+            fill="outline" label="Contraseña" labelPlacement="floating"
+            [errorText]="error('password')">
+            <ion-input-password-toggle slot="end" color="secondary"></ion-input-password-toggle>
+          </ion-input>
+
+          <ion-button type="submit" expand="block" shape="round" size="large" [disabled]="cargando()">
+            INICIAR SESIÓN
+          </ion-button>
+        </form>
+
+        <p class="nuevo" (click)="irARegistro()">¿Nuevo aquí? Regístrate</p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
