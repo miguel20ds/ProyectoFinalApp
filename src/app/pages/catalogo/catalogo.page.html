@@ -23,7 +23,9 @@
   <div class="lista">
     @for (p of productos(); track p.id) {
       <ion-card class="tarjeta item">
-        <img [src]="p.thumbnail" [alt]="p.title" loading="lazy" />
+        <div class="contenedor-imagen">
+          <img [src]="p.thumbnail" [alt]="p.title" loading="lazy" />
+        </div>
         <ion-card-content>
           <span class="marca">{{ p.brand }}</span>
           <h3>{{ p.title }}</h3>

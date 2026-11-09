@@ -3,7 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
   IonContent, IonCard, IonCardContent, IonInput, IonInputPasswordToggle,
-  IonButton, ToastController, IonHeader, IonToolbar, IonButtons, IonBackButton,
+  IonButton, ToastController, AlertController, IonHeader, IonToolbar, IonButtons, IonBackButton,
 } from '@ionic/angular';
 import { AuthService } from '../../services/auth.service';
 
@@ -20,6 +20,7 @@ export class LoginPage {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private toastCtrl = inject(ToastController);
+  private alertCtrl = inject(AlertController);
   private auth = inject(AuthService);
 
   cargando = signal(false);
@@ -58,8 +59,12 @@ export class LoginPage {
       }
       await this.mostrarToast(`Bienvenido ${perfil.nombre}`);
       this.router.navigate([perfil.rol === 'admin' ? '/admin' : '/catalogo'], { replaceUrl: true });
-    } catch {
-      await this.mostrarToast('Correo o contraseña incorrectos');
+    } catch (err: any) {
+      if (err?.code === 'CUENTA_BLOQUEADA' || err?.message === 'CUENTA_BLOQUEADA') {
+        await this.mostrarAlertaBloqueado();
+      } else {
+        await this.mostrarToast('Correo o contraseña incorrectos');
+      }
     } finally {
       this.cargando.set(false);
     }
@@ -67,6 +72,17 @@ export class LoginPage {
 
   irARegistro() {
     this.router.navigate(['/registro']);
+  }
+
+  private async mostrarAlertaBloqueado() {
+    const alert = await this.alertCtrl.create({
+      header: '🚫 Cuenta Bloqueada',
+      subHeader: 'Acceso Restringido',
+      message: 'Tu cuenta ha sido bloqueada por un administrador. Comunícate con el soporte de la plataforma para más información.',
+      buttons: ['Entendido'],
+      backdropDismiss: false,
+    });
+    await alert.present();
   }
 
   private async mostrarToast(message: string) {

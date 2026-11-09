@@ -54,12 +54,18 @@ export class ReservaService {
     return (data ?? []) as Reserva[];
   }
 
-  async marcarEntregado(id: string): Promise<void> {
+  async cambiarEstado(id: string, nuevoEstado: Reserva['estado']): Promise<void> {
     const { data, error } = await this.sb
-      .from('reservas').update({ estado: 'entregado' })
-      .eq('id', id).eq('estado', 'pendiente').select();
+      .from('reservas')
+      .update({ estado: nuevoEstado })
+      .eq('id', id)
+      .select();
     if (error) throw error;
-    if (!data?.length) throw new Error('No se pudo actualizar');
+    if (!data?.length) throw new Error('No se pudo actualizar el estado de la reserva');
+  }
+
+  async marcarEntregado(id: string): Promise<void> {
+    return this.cambiarEstado(id, 'entregado');
   }
 }
 

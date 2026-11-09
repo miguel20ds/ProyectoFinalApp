@@ -25,10 +25,6 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/catalogo/catalogo.page').then((m) => m.CatalogoPage),
   },
   {
-    path: 'registro',
-    loadComponent: () => import('./pages/registro/registro.page').then((m) => m.RegistroPage),
-  },
-  {
     path: 'mis-reservas',
     canActivate: [authGuard],
     loadComponent: () => import('./pages/mis-reservas/mis-reservas.page').then((m) => m.MisReservasPage),

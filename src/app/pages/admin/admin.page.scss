@@ -1,2 +1,201 @@
-ion-segment { padding: 8px 16px 0; }
-.cliente { word-break: break-all; }
+.logo-texto {
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.05em;
+  color: #ff007f;
+  padding-left: 12px;
+}
+
+.toolbar-nav {
+  --background: #141420;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+ion-segment {
+  padding: 4px 12px;
+  --background: rgba(255, 255, 255, 0.04);
+}
+
+.buscador-caja {
+  padding: 4px 16px 8px;
+  ion-searchbar {
+    --border-radius: 12px;
+    --placeholder-color: #888899;
+    --icon-color: #00f0ff;
+    padding: 0;
+  }
+}
+
+.cliente {
+  word-break: break-all;
+  color: #c0c0d0;
+  font-size: 13px;
+  margin: 2px 0;
+}
+
+.precio-fecha {
+  color: #e0e0f0;
+  font-size: 13px;
+  margin: 2px 0 6px;
+}
+
+.badge-fila {
+  margin-bottom: 8px;
+}
+
+/* Miniatura de producto en reserva */
+.miniatura-caja {
+  width: 72px;
+  height: 72px;
+  min-width: 72px;
+  border-radius: 12px;
+  background: radial-gradient(circle, rgba(255, 0, 127, 0.08) 0%, rgba(18, 18, 28, 0.95) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  box-sizing: border-box;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+  }
+}
+
+/* Acciones de reserva */
+.acciones-reserva {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  align-items: center;
+}
+
+/* Métricas de usuarios */
+.metricas-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 8px 16px 12px;
+
+  .metrica-chip {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 8px 4px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .valor {
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.2;
+
+      &.valor-cyan { color: #00f0ff; }
+      &.valor-pink { color: #ff007f; }
+      &.valor-red { color: #ff5252; }
+    }
+
+    .etiqueta {
+      font-size: 11px;
+      color: #9999aa;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+    }
+  }
+}
+
+/* Tarjeta de usuario */
+.tarjeta-usuario {
+  transition: border-color 0.2s ease, opacity 0.2s ease;
+
+  &.bloqueado-card {
+    border-color: rgba(255, 82, 82, 0.4);
+    opacity: 0.88;
+  }
+}
+
+.usuario-contenido {
+  padding: 16px;
+}
+
+.usuario-cabecera {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  .avatar {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00f0ff 0%, #0077ff 100%);
+    color: #0b0b14;
+    font-weight: 800;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 240, 255, 0.3);
+
+    &.avatar-admin {
+      background: linear-gradient(135deg, #ff007f 0%, #7928ca 100%);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(255, 0, 127, 0.3);
+    }
+  }
+
+  .usuario-datos {
+    flex: 1;
+    min-width: 0;
+
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .correo {
+      margin: 2px 0 6px;
+      font-size: 13px;
+      color: #9999aa;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .badges-usuario {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+
+      ion-badge {
+        font-size: 11px;
+        padding: 4px 8px;
+        border-radius: 6px;
+      }
+    }
+  }
+}
+
+.usuario-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  justify-content: flex-end;
+}
