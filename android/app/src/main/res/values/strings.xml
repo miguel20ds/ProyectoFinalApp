@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">tu-aroma-encantador</string>
+    <string name="title_activity_main">tu-aroma-encantador</string>
+    <string name="package_name">com.tuaroma.encantador</string>
+    <string name="custom_url_scheme">com.tuaroma.encantador</string>
+</resources>
