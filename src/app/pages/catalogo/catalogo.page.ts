@@ -1,19 +1,48 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { IonContent, IonCard, IonCardContent, IonButton, IonSpinner, ToastController, IonHeader, IonToolbar, IonButtons, IonBackButton,  } from '@ionic/angular';
-import { Producto } from '../../models/producto';
-import { ProductoService } from '../../services/producto.service';
-import { AuthService } from '../../services/auth.service';
+import { CurrencyPipe } from '@angular/common';
+import { Component, inject, signal, computed } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import {
+  IonContent,
+  IonCard,
+  IonCardContent,
+  IonButton,
+  IonSpinner,
+  ToastController,
+  IonHeader,
+  IonToolbar,
+  IonButtons,
+  IonBackButton,
+  AlertController,
+} from '@ionic/angular';
+
+import type { ConsultaProductos, Producto } from '../../models/producto';
+import { TAMANO_PAGINA } from '../../models/producto';
+import { AuthService } from '../../services/auth.service';
+import { ProductoService } from '../../services/producto.service';
 import { ReservaService } from '../../services/reserva.service';
+import { ImagenProductoPipe } from '../../shared/presentacion';
 
 @Component({
   selector: 'app-catalogo',
   templateUrl: './catalogo.page.html',
   styleUrls: ['./catalogo.page.scss'],
-  imports: [IonContent, IonCard, IonCardContent, IonButton, IonSpinner, IonHeader, IonToolbar, IonButtons, IonBackButton,],
+  imports: [
+    FormsModule,
+    CurrencyPipe,
+    ImagenProductoPipe,
+    IonContent,
+    IonCard,
+    IonCardContent,
+    IonButton,
+    IonSpinner,
+    IonHeader,
+    IonToolbar,
+    IonButtons,
+    IonBackButton,
+  ],
 })
-export class CatalogoPage implements OnInit {
+export class CatalogoPage {
   private api = inject(ProductoService);
   private toastCtrl = inject(ToastController);
 
@@ -24,17 +53,24 @@ export class CatalogoPage implements OnInit {
   private auth = inject(AuthService);
   nombre = computed(() => this.auth.usuario()?.nombre ?? 'Usuario');
 
-  productos= signal<Producto[]>([]);
+  productos = signal<Producto[]>([]);
   cargando = signal(true);
+  fallo = signal(false);
+  total = signal(0);
+  pagina = 0;
+  busqueda = '';
+  orden: ConsultaProductos['orden'] = 'nombre';
+  tamanoPagina = TAMANO_PAGINA;
+  private solicitud = 0;
 
-  ngOnInit() {
-    this.cargar();
+  ionViewWillEnter(): void {
+    void this.cargar();
   }
 
-  async confirmarReserva(p: Producto) {
+  async confirmarReserva(p: Producto): Promise<void> {
     const alert = await this.alertCtrl.create({
       header: 'Reservar perfume',
-      message: `¿Quieres reservar "${p.title}" por $${p.price}?`,
+      message: `¿Quieres reservar "${p.nombre}" por ${new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(p.precio_cop ?? 0)} COP?`,
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         { text: 'Reservar', role: 'confirm' },
@@ -49,17 +85,15 @@ export class CatalogoPage implements OnInit {
       await this.toast('¡Reservado! Míralo en "Mis reservas"');
     } catch (e: any) {
       console.error(e);
-      await this.toast(
-        e?.code === '23505' ? 'Ya tienes este perfume reservado (pendiente)' : 'No se pudo reservar',
-      );
+      await this.toast(e?.code === '23505' ? 'Ya tienes este perfume reservado (pendiente)' : 'No se pudo reservar');
     }
   }
 
-  irAMisReservas() {
+  irAMisReservas(): void {
     this.router.navigate(['/mis-reservas']);
   }
 
-  async salir() {
+  async salir(): Promise<void> {
     await this.auth.logout();
     this.router.navigate(['/login'], { replaceUrl: true });
   }
@@ -69,22 +103,28 @@ export class CatalogoPage implements OnInit {
     await t.present();
   }
 
-  cargar() {
+  async cargar(reiniciar = false): Promise<void> {
+    if (reiniciar) this.pagina = 0;
+    const solicitud = ++this.solicitud;
     this.cargando.set(true);
-    this.api.getFragancias().subscribe({
-      next: (r) => {
-        this.productos.set(r.products);
-        this.cargando.set(false);
-      },
-      error: async (e) => {
-        this.cargando.set(false);
-        const toast = await this.toastCtrl.create({
-          message: `Error al cargar los productos: ${e.message}`,
-          duration: 3500,
-          cssClass: 'toast-aroma',
-        });
-        await toast.present();
-      },
-    });
+    this.fallo.set(false);
+    try {
+      const resultado = await this.api.listar({ pagina: this.pagina, busqueda: this.busqueda, orden: this.orden });
+      if (solicitud !== this.solicitud) return;
+      this.productos.set(resultado.productos);
+      this.total.set(resultado.total);
+    } catch {
+      if (solicitud === this.solicitud) {
+        this.fallo.set(true);
+        this.productos.set([]);
+      }
+    } finally {
+      if (solicitud === this.solicitud) this.cargando.set(false);
+    }
+  }
+
+  cambiarPagina(delta: number): void {
+    this.pagina += delta;
+    void this.cargar();
   }
 }

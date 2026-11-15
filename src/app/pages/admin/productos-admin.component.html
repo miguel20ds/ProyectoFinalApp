@@ -1,0 +1,128 @@
+<section class="productos">
+  <header>
+    <h1>PRODUCTOS</h1>
+    <p>Tu catálogo de perfumes · precios en pesos colombianos</p>
+  </header>
+  @if (mensaje()) {
+    <p role="status">{{ mensaje() }}</p>
+  }
+  @if (error()) {
+    <p class="error" role="alert">{{ error() }}</p>
+  }
+  @if (borrador.error()) {
+    <p class="error" role="alert">{{ borrador.error() }}</p>
+  }
+  @if (editor()) {
+    <form [formGroup]="form" (ngSubmit)="guardar()" class="editor" novalidate>
+      <h2>{{ id ? 'Editar perfume' : 'Nuevo perfume' }}</h2>
+      <fieldset [disabled]="guardando() || seleccionando()">
+        <label>Nombre *<input formControlName="nombre" maxlength="160" required /></label>
+        <label>Marca *<input formControlName="marca" maxlength="120" /></label>
+        <label>Descripción *<textarea formControlName="descripcion" maxlength="4000" rows="3"></textarea></label>
+        <label
+          >Presentación *<input formControlName="presentacion" maxlength="120" placeholder="Ej. Eau de parfum · 100 ml"
+        /></label>
+        <label
+          >Precio en COP *<input
+            formControlName="precio_cop"
+            type="number"
+            min="0.01"
+            max="999999999999.99"
+            step="0.01"
+            placeholder="Ingresa el precio del perfume"
+        /></label>
+        @if (origen?.origen_id) {
+          <p>
+            Importado de demostración. Precio original de referencia: {{ origen.origen_precio }}. No es un precio COP.
+          </p>
+        }
+        <label class="check"><input formControlName="activo" type="checkbox" /> Publicar en el catálogo</label>
+      </fieldset>
+      @if (vistaPrevia()) {
+        <img class="preview" [src]="vistaPrevia()" alt="Vista previa del perfume" />
+      }
+      <p>Imagen obligatoria: JPEG, PNG o WebP, máximo 5 MB.</p>
+      <div class="acciones">
+        <ion-button type="button" (click)="seleccionar('camara')" [disabled]="guardando() || seleccionando()"
+          >Tomar foto</ion-button
+        >
+        <ion-button
+          type="button"
+          fill="outline"
+          (click)="seleccionar('galeria')"
+          [disabled]="guardando() || seleccionando()"
+          >Seleccionar de la galería</ion-button
+        >
+      </div>
+      <div class="acciones">
+        <ion-button type="submit" [disabled]="guardando() || seleccionando()">{{
+          guardando() ? 'Guardando…' : 'Guardar perfume'
+        }}</ion-button>
+        <ion-button type="button" fill="clear" (click)="descartar()" [disabled]="guardando() || seleccionando()"
+          >Descartar borrador</ion-button
+        >
+      </div>
+    </form>
+  } @else {
+    <ion-button (click)="editar()" [disabled]="guardando()">Nuevo perfume</ion-button>
+  }
+  <form class="filtros" (ngSubmit)="cargar(true)">
+    <label
+      >Buscar por nombre o marca<input type="search" name="busqueda" [(ngModel)]="busqueda" maxlength="100"
+    /></label>
+    <label
+      >Disponibilidad<select name="estado" [(ngModel)]="estado" (ngModelChange)="cargar(true)">
+        <option value="todos">Todos</option>
+        <option value="activos">Activos</option>
+        <option value="inactivos">Inactivos</option>
+      </select></label
+    >
+    <ion-button type="submit" [disabled]="cargando()">Buscar</ion-button>
+    <ion-button type="button" fill="outline" (click)="cargar()" [disabled]="cargando()">Recargar</ion-button>
+  </form>
+  @if (cargando()) {
+    <ion-spinner aria-label="Cargando perfumes"></ion-spinner>
+  } @else {
+    @if (!productos().length) {
+      <p>No hay perfumes que coincidan. Puedes crear uno nuevo o cambiar los filtros.</p>
+    }
+    <div class="grid">
+      @for (p of productos(); track p.id) {
+        <article>
+          @if (p.imagen_ruta) {
+            <img [src]="p.imagen_ruta | imagenProducto" [alt]="p.nombre" loading="lazy" />
+          }
+          <span class="estado">{{ p.activo ? 'Activo' : 'Inactivo' }}</span>
+          <h2>{{ p.nombre }}</h2>
+          <p>{{ p.marca }} · {{ p.presentacion }}</p>
+          <p>
+            {{
+              p.precio_cop === null
+                ? 'Precio COP pendiente'
+                : (p.precio_cop | currency: 'COP' : 'code' : '1.0-2' : 'es-CO')
+            }}
+          </p>
+          <div class="acciones">
+            <ion-button size="small" (click)="editar(p)" [disabled]="editor() || guardando()">Editar</ion-button>
+            <ion-button size="small" fill="outline" (click)="toggle(p)" [disabled]="editor() || guardando()">{{
+              p.activo ? 'Desactivar' : 'Publicar'
+            }}</ion-button>
+            <ion-button
+              size="small"
+              color="danger"
+              fill="outline"
+              (click)="eliminar(p)"
+              [disabled]="editor() || guardando()"
+              >Eliminar</ion-button
+            >
+          </div>
+        </article>
+      }
+    </div>
+    <nav aria-label="Páginas de productos">
+      <ion-button [disabled]="pagina === 0" (click)="cambiarPagina(-1)">Anterior</ion-button>
+      <span>Página {{ pagina + 1 }} · {{ total() }} perfumes</span>
+      <ion-button [disabled]="(pagina + 1) * tamanoPagina >= total()" (click)="cambiarPagina(1)">Siguiente</ion-button>
+    </nav>
+  }
+</section>

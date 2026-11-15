@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonContent, IonCard, IonCardContent, IonButton } from '@ionic/angular';
 import { Browser } from '@capacitor/browser';
+import { IonContent, IonCard, IonCardContent, IonButton } from '@ionic/angular';
 
 @Component({
   selector: 'app-inicio',
@@ -12,11 +12,11 @@ import { Browser } from '@capacitor/browser';
 export class InicioPage {
   private router = inject(Router);
 
-  abrir(url: string) {
+  abrir(url: string): void {
     Browser.open({ url });
   }
 
-  ingresar() {
+  ingresar(): void {
     this.router.navigate(['/login']);
   }
 }

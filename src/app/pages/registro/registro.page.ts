@@ -1,16 +1,24 @@
 import { Component, inject, signal } from '@angular/core';
-import {
-  AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators,
-} from '@angular/forms';
+import type { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
-  IonContent, IonCard, IonCardContent, IonInput, IonInputPasswordToggle,
-  IonButton, ToastController, IonHeader, IonToolbar, IonButtons, IonBackButton,
+  IonContent,
+  IonCard,
+  IonCardContent,
+  IonInput,
+  IonInputPasswordToggle,
+  IonButton,
+  ToastController,
+  IonHeader,
+  IonToolbar,
+  IonButtons,
+  IonBackButton,
 } from '@ionic/angular';
+
 import { AuthService } from '../../services/auth.service';
 
-const noVacio = (c: AbstractControl): ValidationErrors | null =>
-  (c.value ?? '').trim() ? null : { required: true };
+const noVacio = (c: AbstractControl): ValidationErrors | null => ((c.value ?? '').trim() ? null : { required: true });
 
 const tieneMayuscula = (c: AbstractControl): ValidationErrors | null =>
   /[A-Z]/.test(c.value ?? '') ? null : { mayuscula: true };
@@ -26,8 +34,17 @@ const coinciden: ValidatorFn = (g) =>
   templateUrl: './registro.page.html',
   styleUrls: ['../login/login.page.scss'],
   imports: [
-    ReactiveFormsModule, IonContent, IonCard, IonCardContent, IonInput,
-    IonInputPasswordToggle, IonButton, IonHeader, IonToolbar, IonButtons, IonBackButton,
+    ReactiveFormsModule,
+    IonContent,
+    IonCard,
+    IonCardContent,
+    IonInput,
+    IonInputPasswordToggle,
+    IonButton,
+    IonHeader,
+    IonToolbar,
+    IonButtons,
+    IonBackButton,
   ],
 })
 export class RegistroPage {
@@ -72,7 +89,7 @@ export class RegistroPage {
     return '';
   }
 
-  async registrarse() {
+  async registrarse(): Promise<void> {
     this.form.markAllAsTouched();
     if (this.form.invalid) {
       const primero = this.error('nombre') || this.error('email') || this.error('password') || this.error('confirmar');
@@ -88,7 +105,6 @@ export class RegistroPage {
         await this.mostrarToast(`Bienvenido ${nombre.trim()}`);
         this.router.navigate(['/catalogo'], { replaceUrl: true });
       } else {
-        // Si el proyecto exige confirmar el correo, aún no hay sesión
         await this.mostrarToast('Cuenta creada. Revisa tu correo para confirmarla');
         this.router.navigate(['/login'], { replaceUrl: true });
       }
@@ -102,7 +118,10 @@ export class RegistroPage {
 
   private async mostrarToast(message: string) {
     const toast = await this.toastCtrl.create({
-      message, duration: 2500, position: 'bottom', cssClass: 'toast-aroma',
+      message,
+      duration: 2500,
+      position: 'bottom',
+      cssClass: 'toast-aroma',
     });
     await toast.present();
   }

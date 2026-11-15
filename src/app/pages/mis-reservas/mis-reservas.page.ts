@@ -1,20 +1,41 @@
-import { Component, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
 import {
-  IonContent, IonCard, IonCardContent, IonSpinner, IonButton,
-  IonHeader, IonToolbar, IonButtons, IonBackButton,
-  AlertController, ToastController,
+  IonContent,
+  IonCard,
+  IonCardContent,
+  IonSpinner,
+  IonButton,
+  IonHeader,
+  IonToolbar,
+  IonButtons,
+  IonBackButton,
+  AlertController,
+  ToastController,
 } from '@ionic/angular';
+
 import { AuthService } from '../../services/auth.service';
-import { Reserva, ReservaService, ETIQUETA_ESTADO } from '../../services/reserva.service';
+import type { Reserva } from '../../services/reserva.service';
+import { ReservaService, ETIQUETA_ESTADO } from '../../services/reserva.service';
+import { ImagenProductoPipe, PrecioReservaPipe } from '../../shared/presentacion';
 
 @Component({
   selector: 'app-mis-reservas',
   templateUrl: './mis-reservas.page.html',
   styleUrls: ['./mis-reservas.page.scss'],
   imports: [
-    DatePipe, IonContent, IonCard, IonCardContent, IonSpinner, IonButton,
-    IonHeader, IonToolbar, IonButtons, IonBackButton,
+    ImagenProductoPipe,
+    PrecioReservaPipe,
+    DatePipe,
+    IonContent,
+    IonCard,
+    IonCardContent,
+    IonSpinner,
+    IonButton,
+    IonHeader,
+    IonToolbar,
+    IonButtons,
+    IonBackButton,
   ],
 })
 export class MisReservasPage {
@@ -28,7 +49,7 @@ export class MisReservasPage {
   cargando = signal(true);
   fallo = signal(false);
 
-  async ionViewWillEnter() {
+  async ionViewWillEnter(): Promise<void> {
     const u = this.auth.usuario();
     if (!u) return;
     this.cargando.set(true);
@@ -43,7 +64,7 @@ export class MisReservasPage {
     }
   }
 
-  async cancelar(r: Reserva) {
+  async cancelar(r: Reserva): Promise<void> {
     const alert = await this.alertCtrl.create({
       header: 'Cancelar reserva',
       message: `¿Seguro que quieres cancelar la reserva de "${r.producto_titulo}"?`,
@@ -58,14 +79,12 @@ export class MisReservasPage {
 
     try {
       await this.api.cancelar(r.id);
-      this.reservas.update((lista) =>
-        lista.map((x) => (x.id === r.id ? { ...x, estado: 'cancelada' as const } : x)),
-      );
+      this.reservas.update((lista) => lista.map((x) => (x.id === r.id ? { ...x, estado: 'cancelada' as const } : x)));
       await this.toast('Reserva cancelada');
     } catch (e) {
       console.error(e);
       await this.toast('No se pudo cancelar. Puede que ya haya sido entregada');
-      await this.ionViewWillEnter(); // refresca el estado real
+      await this.ionViewWillEnter(); 
     }
   }
 

@@ -1,14 +1,34 @@
-import { Component, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  IonContent, IonCard, IonCardContent, IonSpinner, IonButton, IonHeader, IonToolbar,
-  IonButtons, IonSegment, IonSegmentButton, IonLabel, IonSearchbar, IonBadge,
-  AlertController, ToastController, ActionSheetController,
+  IonContent,
+  IonCard,
+  IonCardContent,
+  IonSpinner,
+  IonButton,
+  IonHeader,
+  IonToolbar,
+  IonButtons,
+  IonSegment,
+  IonSegmentButton,
+  IonLabel,
+  IonSearchbar,
+  IonBadge,
+  AlertController,
+  ToastController,
+  ActionSheetController,
 } from '@ionic/angular';
-import { AuthService, Perfil } from '../../services/auth.service';
-import { ETIQUETA_ESTADO, Reserva, ReservaService } from '../../services/reserva.service';
+
+import type { Perfil } from '../../services/auth.service';
+import { AuthService } from '../../services/auth.service';
+import { ProductoBorradorService } from '../../services/producto-borrador.service';
+import type { Reserva } from '../../services/reserva.service';
+import { ETIQUETA_ESTADO, ReservaService } from '../../services/reserva.service';
 import { UsuarioService } from '../../services/usuario.service';
+import { ImagenProductoPipe, PrecioReservaPipe } from '../../shared/presentacion';
+
+import { ProductosAdminComponent } from './productos-admin.component';
 
 type FiltroReserva = 'todas' | Reserva['estado'];
 type FiltroUsuario = 'todos' | 'cliente' | 'admin' | 'bloqueado';
@@ -18,8 +38,23 @@ type FiltroUsuario = 'todos' | 'cliente' | 'admin' | 'bloqueado';
   templateUrl: './admin.page.html',
   styleUrls: ['../mis-reservas/mis-reservas.page.scss', './admin.page.scss'],
   imports: [
-    DatePipe, IonContent, IonCard, IonCardContent, IonSpinner, IonButton, IonHeader,
-    IonToolbar, IonButtons, IonSegment, IonSegmentButton, IonLabel, IonSearchbar, IonBadge,
+    ProductosAdminComponent,
+    ImagenProductoPipe,
+    PrecioReservaPipe,
+    DatePipe,
+    IonContent,
+    IonCard,
+    IonCardContent,
+    IonSpinner,
+    IonButton,
+    IonHeader,
+    IonToolbar,
+    IonButtons,
+    IonSegment,
+    IonSegmentButton,
+    IonLabel,
+    IonSearchbar,
+    IonBadge,
   ],
 })
 export class AdminPage {
@@ -30,33 +65,34 @@ export class AdminPage {
   private alertCtrl = inject(AlertController);
   private toastCtrl = inject(ToastController);
   private actionSheetCtrl = inject(ActionSheetController);
+  private borrador = inject(ProductoBorradorService);
 
   etiqueta = ETIQUETA_ESTADO;
 
-  // Navegación principal del panel
-  seccion = signal<'reservas' | 'usuarios'>('reservas');
+  
+  seccion = signal<'reservas' | 'usuarios' | 'productos'>('reservas');
 
-  // Estado de Reservas
+  
   reservas = signal<Reserva[]>([]);
   cargandoReservas = signal(true);
   falloReservas = signal(false);
   filtroReserva = signal<FiltroReserva>('todas');
   busquedaReserva = signal<string>('');
 
-  // Estado de Usuarios
+  
   usuarios = signal<Perfil[]>([]);
   cargandoUsuarios = signal(false);
   falloUsuarios = signal(false);
   filtroUsuario = signal<FiltroUsuario>('todos');
   busquedaUsuario = signal<string>('');
 
-  // Métricas de usuarios
+  
   totalUsuarios = computed(() => this.usuarios().length);
   totalClientes = computed(() => this.usuarios().filter((u) => u.rol === 'cliente').length);
   totalAdmins = computed(() => this.usuarios().filter((u) => u.rol === 'admin').length);
   totalBloqueados = computed(() => this.usuarios().filter((u) => !!u.bloqueado).length);
 
-  // Filtro reactivo de reservas
+  
   visibles = computed(() => {
     const f = this.filtroReserva();
     const query = this.busquedaReserva().toLowerCase().trim();
@@ -73,7 +109,7 @@ export class AdminPage {
     });
   });
 
-  // Filtro reactivo de usuarios
+  
   usuariosFiltrados = computed(() => {
     const f = this.filtroUsuario();
     const query = this.busquedaUsuario().toLowerCase().trim();
@@ -90,18 +126,18 @@ export class AdminPage {
     });
   });
 
-  async ionViewWillEnter() {
+  async ionViewWillEnter(): Promise<void> {
+    await this.borrador.listo;
+    if (this.borrador.borrador()?.usuarioId === this.auth.usuario()?.id) this.seccion.set('productos');
     await Promise.all([this.cargarReservas(), this.cargarUsuarios()]);
   }
 
-  cambiarSeccion(ev: Event) {
-    this.seccion.set((ev as CustomEvent).detail.value as 'reservas' | 'usuarios');
+  cambiarSeccion(ev: Event): void {
+    this.seccion.set((ev as CustomEvent).detail.value as 'reservas' | 'usuarios' | 'productos');
   }
 
-  // ==========================================
-  // GESTIÓN DE RESERVAS
-  // ==========================================
-  async cargarReservas() {
+  
+  async cargarReservas(): Promise<void> {
     this.cargandoReservas.set(true);
     this.falloReservas.set(false);
     try {
@@ -114,15 +150,15 @@ export class AdminPage {
     }
   }
 
-  cambiarFiltroReserva(ev: Event) {
+  cambiarFiltroReserva(ev: Event): void {
     this.filtroReserva.set((ev as CustomEvent).detail.value as FiltroReserva);
   }
 
-  onBuscarReserva(ev: any) {
+  onBuscarReserva(ev: any): void {
     this.busquedaReserva.set(ev?.target?.value ?? '');
   }
 
-  async cambiarEstadoReserva(r: Reserva, nuevoEstado: Reserva['estado']) {
+  async cambiarEstadoReserva(r: Reserva, nuevoEstado: Reserva['estado']): Promise<void> {
     if (r.estado === nuevoEstado) return;
 
     const nombreEstado = this.etiqueta[nuevoEstado];
@@ -153,7 +189,7 @@ export class AdminPage {
     await alert.present();
   }
 
-  async abrirMenuEstados(r: Reserva) {
+  async abrirMenuEstados(r: Reserva): Promise<void> {
     const sheet = await this.actionSheetCtrl.create({
       header: `Cambiar estado: ${r.producto_titulo}`,
       subHeader: `Estado actual: ${this.etiqueta[r.estado]}`,
@@ -182,10 +218,8 @@ export class AdminPage {
     await sheet.present();
   }
 
-  // ==========================================
-  // GESTIÓN DE USUARIOS
-  // ==========================================
-  async cargarUsuarios() {
+  
+  async cargarUsuarios(): Promise<void> {
     this.cargandoUsuarios.set(true);
     this.falloUsuarios.set(false);
     try {
@@ -198,15 +232,15 @@ export class AdminPage {
     }
   }
 
-  cambiarFiltroUsuario(ev: Event) {
+  cambiarFiltroUsuario(ev: Event): void {
     this.filtroUsuario.set((ev as CustomEvent).detail.value as FiltroUsuario);
   }
 
-  onBuscarUsuario(ev: any) {
+  onBuscarUsuario(ev: any): void {
     this.busquedaUsuario.set(ev?.target?.value ?? '');
   }
 
-  async toggleBloqueo(u: Perfil) {
+  async toggleBloqueo(u: Perfil): Promise<void> {
     const nuevoEstado = !u.bloqueado;
     const accion = nuevoEstado ? 'Bloquear' : 'Desbloquear';
     const advertencia = nuevoEstado
@@ -240,7 +274,7 @@ export class AdminPage {
     await alert.present();
   }
 
-  async editarPerfilUsuario(u: Perfil) {
+  async editarPerfilUsuario(u: Perfil): Promise<void> {
     const alert = await this.alertCtrl.create({
       header: 'Editar Usuario',
       inputs: [
@@ -280,9 +314,7 @@ export class AdminPage {
   private async guardarEdicionUsuario(u: Perfil, nombre: string, rol: 'cliente' | 'admin') {
     try {
       await this.usuarioService.actualizarPerfil(u.id, { nombre, rol });
-      this.usuarios.update((lista) =>
-        lista.map((item) => (item.id === u.id ? { ...item, nombre, rol } : item)),
-      );
+      this.usuarios.update((lista) => lista.map((item) => (item.id === u.id ? { ...item, nombre, rol } : item)));
       await this.toast(`Usuario ${nombre} actualizado exitosamente`);
     } catch (err) {
       console.error('Error al guardar edición de usuario:', err);
@@ -290,87 +322,8 @@ export class AdminPage {
     }
   }
 
-  async gestionarPassword(u: Perfil) {
-    const alert = await this.alertCtrl.create({
-      header: `Contraseña de ${u.nombre}`,
-      subHeader: u.email,
-      message: 'Ingresa la nueva contraseña o envía un correo de restablecimiento.',
-      inputs: [
-        {
-          name: 'nuevaPassword',
-          type: 'password',
-          placeholder: 'Nueva contraseña (mín. 6 caracteres)',
-        },
-        {
-          name: 'confirmarPassword',
-          type: 'password',
-          placeholder: 'Confirmar nueva contraseña',
-        },
-      ],
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Enviar Correo de Restablecimiento',
-          handler: async () => {
-            try {
-              await this.usuarioService.enviarResetEmail(u.email);
-              await this.toast(`Correo de recuperación enviado a ${u.email}`);
-            } catch (err) {
-              console.error('Error enviando reset email:', err);
-              await this.toast('No se pudo enviar el correo de restablecimiento');
-            }
-          },
-        },
-        {
-          text: 'Asignar Contraseña',
-          handler: async (data) => {
-            const pass = data.nuevaPassword;
-            const confirm = data.confirmarPassword;
-
-            if (!pass || pass.length < 6) {
-              await this.toast('La contraseña debe tener al menos 6 caracteres');
-              return false;
-            }
-            if (pass !== confirm) {
-              await this.toast('Las contraseñas no coinciden');
-              return false;
-            }
-
-            try {
-              await this.usuarioService.cambiarPassword(u.id, pass);
-              await this.toast(`Contraseña de ${u.nombre} actualizada`);
-              return true;
-            } catch (err: any) {
-              console.error('Error al cambiar contraseña:', err);
-              const alertHelp = await this.alertCtrl.create({
-                header: 'Función SQL no configurada',
-                message:
-                  'Para cambiar contraseñas directamente desde la app, debes crear la función RPC "admin_cambiar_password" en Supabase. Mientras tanto, puedes enviar el correo de restablecimiento.',
-                buttons: [
-                  {
-                    text: 'Enviar correo ahora',
-                    handler: async () => {
-                      await this.usuarioService.enviarResetEmail(u.email);
-                      await this.toast(`Correo enviado a ${u.email}`);
-                    },
-                  },
-                  { text: 'Cerrar', role: 'cancel' },
-                ],
-              });
-              await alertHelp.present();
-              return true;
-            }
-          },
-        },
-      ],
-    });
-    await alert.present();
-  }
-
-  // ==========================================
-  // SALIR
-  // ==========================================
-  async salir() {
+  
+  async salir(): Promise<void> {
     await this.auth.logout();
     this.router.navigate(['/login'], { replaceUrl: true });
   }

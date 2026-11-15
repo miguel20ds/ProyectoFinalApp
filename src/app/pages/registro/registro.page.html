@@ -14,23 +14,47 @@
         <p class="sub">Regístrate para reservar tus perfumes</p>
 
         <form [formGroup]="form" (ngSubmit)="registrarse()">
-          <ion-input formControlName="nombre" type="text" autocomplete="name"
-            fill="outline" label="Nombre" labelPlacement="floating"
-            [errorText]="error('nombre')"></ion-input>
+          <ion-input
+            formControlName="nombre"
+            type="text"
+            autocomplete="name"
+            fill="outline"
+            label="Nombre"
+            labelPlacement="floating"
+            [errorText]="error('nombre')"
+          ></ion-input>
 
-          <ion-input formControlName="email" type="email" autocomplete="email"
-            fill="outline" label="Correo electrónico" labelPlacement="floating"
-            [errorText]="error('email')"></ion-input>
+          <ion-input
+            formControlName="email"
+            type="email"
+            autocomplete="email"
+            fill="outline"
+            label="Correo electrónico"
+            labelPlacement="floating"
+            [errorText]="error('email')"
+          ></ion-input>
 
-          <ion-input formControlName="password" type="password" autocomplete="new-password"
-            fill="outline" label="Contraseña" labelPlacement="floating"
-            [errorText]="error('password')">
+          <ion-input
+            formControlName="password"
+            type="password"
+            autocomplete="new-password"
+            fill="outline"
+            label="Contraseña"
+            labelPlacement="floating"
+            [errorText]="error('password')"
+          >
             <ion-input-password-toggle slot="end" color="secondary"></ion-input-password-toggle>
           </ion-input>
 
-          <ion-input formControlName="confirmar" type="password" autocomplete="new-password"
-            fill="outline" label="Confirmar contraseña" labelPlacement="floating"
-            [errorText]="error('confirmar')">
+          <ion-input
+            formControlName="confirmar"
+            type="password"
+            autocomplete="new-password"
+            fill="outline"
+            label="Confirmar contraseña"
+            labelPlacement="floating"
+            [errorText]="error('confirmar')"
+          >
             <ion-input-password-toggle slot="end" color="secondary"></ion-input-password-toggle>
           </ion-input>
 

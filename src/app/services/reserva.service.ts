@@ -1,11 +1,15 @@
 import { Injectable, inject } from '@angular/core';
+
+import type { Producto } from '../models/producto';
+
 import { SupabaseService } from './supabase.service';
-import { Producto } from '../models/producto';
 
 export interface Reserva {
   id: string;
   usuario_id: string;
-  producto_id: number;
+  producto_id: number | null;
+  perfume_id: string | null;
+  moneda: 'COP' | null;
   producto_titulo: string;
   producto_imagen: string | null;
   precio: number;
@@ -19,12 +23,7 @@ export class ReservaService {
   private sb = inject(SupabaseService).client;
 
   async reservar(p: Producto): Promise<void> {
-    const { error } = await this.sb.from('reservas').insert({
-      producto_id: p.id,
-      producto_titulo: p.title,
-      producto_imagen: p.thumbnail,
-      precio: p.price,
-    });
+    const { error } = await this.sb.rpc('crear_reserva', { perfume_id: p.id });
     if (error) throw error;
   }
 
@@ -39,10 +38,8 @@ export class ReservaService {
   }
 
   async cancelar(id: string): Promise<void> {
-    const { data, error } = await this.sb
-      .from('reservas').update({ estado: 'cancelada' }).eq('id', id).select();
+    const { error } = await this.sb.rpc('cancelar_reserva', { reserva_id: id });
     if (error) throw error;
-    if (!data?.length) throw new Error('No se pudo cancelar');
   }
 
   async todas(): Promise<Reserva[]> {
@@ -55,17 +52,8 @@ export class ReservaService {
   }
 
   async cambiarEstado(id: string, nuevoEstado: Reserva['estado']): Promise<void> {
-    const { data, error } = await this.sb
-      .from('reservas')
-      .update({ estado: nuevoEstado })
-      .eq('id', id)
-      .select();
+    const { error } = await this.sb.rpc('cambiar_estado_reserva', { reserva_id: id, nuevo_estado: nuevoEstado });
     if (error) throw error;
-    if (!data?.length) throw new Error('No se pudo actualizar el estado de la reserva');
-  }
-
-  async marcarEntregado(id: string): Promise<void> {
-    return this.cambiarEstado(id, 'entregado');
   }
 }
 

@@ -43,3 +43,7 @@ h3 { color: #fff; font-size: 22px; font-weight: bold; margin: 4px 0 0; }
 hr { border: 0; height: 1px; background: #444455; margin: 16px 0; }
 .fila { display: flex; align-items: center; justify-content: space-between; }
 .precio { color: #ff007f; font-size: 20px; font-weight: bold; }
+.filtros { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; padding: 0 24px 24px; }
+.filtros label { display: grid; gap: 6px; flex: 1; min-width: 180px; }
+.filtros input, .filtros select { padding: 12px; border: 1px solid #666; border-radius: 8px; background: #141420; color: white; }
+nav.centro { align-items: center; flex-wrap: wrap; gap: 12px; }

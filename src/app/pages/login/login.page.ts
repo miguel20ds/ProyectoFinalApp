@@ -2,9 +2,20 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
-  IonContent, IonCard, IonCardContent, IonInput, IonInputPasswordToggle,
-  IonButton, ToastController, AlertController, IonHeader, IonToolbar, IonButtons, IonBackButton,
+  IonContent,
+  IonCard,
+  IonCardContent,
+  IonInput,
+  IonInputPasswordToggle,
+  IonButton,
+  ToastController,
+  AlertController,
+  IonHeader,
+  IonToolbar,
+  IonButtons,
+  IonBackButton,
 } from '@ionic/angular';
+
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -12,8 +23,17 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   imports: [
-    ReactiveFormsModule, IonContent, IonCard, IonCardContent, IonInput,
-    IonInputPasswordToggle, IonButton, IonHeader, IonToolbar, IonButtons, IonBackButton,
+    ReactiveFormsModule,
+    IonContent,
+    IonCard,
+    IonCardContent,
+    IonInput,
+    IonInputPasswordToggle,
+    IonButton,
+    IonHeader,
+    IonToolbar,
+    IonButtons,
+    IonBackButton,
   ],
 })
 export class LoginPage {
@@ -42,7 +62,7 @@ export class LoginPage {
     return clave ? this.mensajes[campo][clave] : '';
   }
 
-  async iniciarSesion() {
+  async iniciarSesion(): Promise<void> {
     this.form.markAllAsTouched();
     if (this.form.invalid) {
       await this.mostrarToast(this.error('email') || this.error('password'));
@@ -70,7 +90,7 @@ export class LoginPage {
     }
   }
 
-  irARegistro() {
+  irARegistro(): void {
     this.router.navigate(['/registro']);
   }
 
@@ -78,7 +98,8 @@ export class LoginPage {
     const alert = await this.alertCtrl.create({
       header: '🚫 Cuenta Bloqueada',
       subHeader: 'Acceso Restringido',
-      message: 'Tu cuenta ha sido bloqueada por un administrador. Comunícate con el soporte de la plataforma para más información.',
+      message:
+        'Tu cuenta ha sido bloqueada por un administrador. Comunícate con el soporte de la plataforma para más información.',
       buttons: ['Entendido'],
       backdropDismiss: false,
     });
@@ -87,7 +108,10 @@ export class LoginPage {
 
   private async mostrarToast(message: string) {
     const toast = await this.toastCtrl.create({
-      message, duration: 2000, position: 'bottom', cssClass: 'toast-aroma',
+      message,
+      duration: 2000,
+      position: 'bottom',
+      cssClass: 'toast-aroma',
     });
     await toast.present();
   }

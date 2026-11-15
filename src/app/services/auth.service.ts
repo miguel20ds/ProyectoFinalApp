@@ -1,4 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
+
 import { SupabaseService } from './supabase.service';
 
 export interface Perfil {
@@ -14,11 +15,16 @@ export class AuthService {
   private sb = inject(SupabaseService).client;
 
   usuario = signal<Perfil | null>(null);
-  listo: Promise<void> = this.cargarPerfil(); 
+  listo: Promise<void> = this.cargarPerfil();
 
   private async cargarPerfil(): Promise<void> {
-    const { data: { session } } = await this.sb.auth.getSession();
-    if (!session) { this.usuario.set(null); return; }
+    const {
+      data: { session },
+    } = await this.sb.auth.getSession();
+    if (!session) {
+      this.usuario.set(null);
+      return;
+    }
     const { data } = await this.sb.from('profiles').select('*').eq('id', session.user.id).single();
     const perfil = data as Perfil | null;
 
@@ -31,7 +37,7 @@ export class AuthService {
     this.usuario.set(perfil);
   }
 
-  async registrar(nombre: string, email: string, password: string) {
+  async registrar(nombre: string, email: string, password: string): Promise<void> {
     const { error } = await this.sb.auth.signUp({ email, password, options: { data: { nombre } } });
     if (error) throw error;
     await this.cargarPerfil();
@@ -65,7 +71,7 @@ export class AuthService {
     return perfil;
   }
 
-  async logout() {
+  async logout(): Promise<void> {
     await this.sb.auth.signOut();
     this.usuario.set(null);
   }

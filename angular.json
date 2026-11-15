@@ -33,7 +33,10 @@
                 "output": "assets"
               }
             ],
-            "styles": ["src/global.scss", "src/theme/variables.scss"],
+            "styles": [
+              "src/global.scss",
+              "src/theme/variables.scss"
+            ],
             "scripts": [],
             "browser": "src/main.ts"
           },
@@ -97,7 +100,9 @@
           "options": {
             "buildTarget": "::development",
             "runnerConfig": "vitest.config.mts",
-            "setupFiles": ["src/test-setup.ts"],
+            "setupFiles": [
+              "src/test-setup.ts"
+            ],
             "tsConfig": "tsconfig.spec.json"
           }
         },
@@ -106,9 +111,7 @@
           "options": {
             "lintFilePatterns": [
               "src/**/*.ts",
-              "src/**/*.html",
-              "e2e/**/*.ts",
-              "playwright.config.ts"
+              "src/**/*.html"
             ]
           }
         }
